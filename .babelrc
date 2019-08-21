@@ -1,0 +1,47 @@
+{
+  "presets": [
+    "@babel/preset-react",
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage",
+        "corejs": { "version": 3, "proposals": true },
+        "modules": false,
+        "loose": true
+      }
+    ]
+  ],
+  "env": {
+    "test": {
+      "presets": ["@babel/preset-env", "@babel/preset-react"],
+      "plugins": [
+        "@babel/plugin-transform-runtime",
+        ["@babel/plugin-proposal-decorators", { "legacy": true }],
+        ["@babel/plugin-proposal-class-properties", { "loose": true }],
+        ["@babel/plugin-proposal-object-rest-spread", { "loose": true }],
+        "@babel/plugin-transform-react-display-name",
+        "@babel/plugin-syntax-dynamic-import",
+        "react-hot-loader/babel",
+        "babel-plugin-styled-components",
+        "add-react-displayname",
+        "transform-react-remove-prop-types"
+      ]
+    },
+    "development": {
+      "plugins": [
+        "@babel/plugin-transform-runtime",
+        ["@babel/plugin-proposal-decorators", { "legacy": true }],
+        ["@babel/plugin-proposal-class-properties", { "loose": true }],
+        ["@babel/plugin-proposal-object-rest-spread", { "loose": true }],
+        "@babel/plugin-transform-react-display-name",
+        "@babel/plugin-syntax-dynamic-import",
+        "react-hot-loader/babel",
+        "babel-plugin-styled-components",
+        "add-react-displayname"
+      ]
+    },
+    "production": {
+      "plugins": ["add-react-displayname", "transform-react-remove-prop-types"]
+    }
+  }
+}

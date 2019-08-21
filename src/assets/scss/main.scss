@@ -1,0 +1,35 @@
+@import 'reset';
+
+$font-stack:
+  'Lato',
+  'Helvetica',
+  'Myriad',
+  'Sans-Serif';
+
+$orange-light: #fcb976;
+$orange-regular: #ff8000;
+$orange-dark: #db6f01;
+$black: #292929;
+$gray: #707070;
+
+/* stylelint-disable */
+* { 
+  box-sizing: border-box;
+}
+/* stylelint-enable */
+
+html {
+  font-size: 62.5%;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: $font-stack;
+  color: $black;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3.6rem;
+  font-weight: bold;
+}
