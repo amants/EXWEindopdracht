@@ -1,5 +1,5 @@
 import React from 'react';
-import { string, func } from 'prop-types';
+import { string, func, number } from 'prop-types';
 import styled from 'styled-components';
 const InputField = ({
   className,
@@ -8,11 +8,12 @@ const InputField = ({
   value,
   placeholder,
   onChange,
+  focusedInput,
 }) => {
   return (
-    <Container>
+    <Container className={className}>
       <input
-        className={className}
+        className={focusedInput === 0 ? 'focused' : null}
         type={type}
         id="input1"
         name={name}
@@ -22,7 +23,7 @@ const InputField = ({
         onChange={e => onChange(e.target.value)}
       />
       <input
-        className={className}
+        className={focusedInput === 1 ? 'focused' : null}
         type={type}
         id="input2"
         name={name}
@@ -31,7 +32,7 @@ const InputField = ({
         onChange={e => onChange(e.target.value)}
       />
       <input
-        className={className}
+        className={focusedInput === 2 ? 'focused' : null}
         type={type}
         id="input3"
         name={name}
@@ -40,7 +41,7 @@ const InputField = ({
         onChange={e => onChange(e.target.value)}
       />
       <input
-        className={className}
+        className={focusedInput === 3 ? 'focused' : null}
         type={type}
         id="input4"
         name={name}
@@ -49,7 +50,7 @@ const InputField = ({
         onChange={e => onChange(e.target.value)}
       />
       <input
-        className={className}
+        className={focusedInput === 4 ? 'focused' : null}
         type={type}
         id="input5"
         name={name}
@@ -58,7 +59,7 @@ const InputField = ({
         onChange={e => onChange(e.target.value)}
       />
       <input
-        className={className}
+        className={focusedInput === 5 ? 'focused' : null}
         type={type}
         id="input6"
         name={name}
@@ -67,7 +68,7 @@ const InputField = ({
         onChange={e => onChange(e.target.value)}
       />
       <input
-        className={className}
+        className={focusedInput === 6 ? 'focused' : null}
         type={type}
         id="input7"
         name={name}
@@ -76,7 +77,7 @@ const InputField = ({
         onChange={e => onChange(e.target.value)}
       />
       <input
-        className={className}
+        className={focusedInput === 7 ? 'focused' : null}
         type={type}
         id="input8"
         name={name}
@@ -88,7 +89,19 @@ const InputField = ({
   );
 };
 
-const Container = styled.div``;
+const Container = styled.div`
+  & > input {
+    width: 10rem;
+    height: 10rem;
+    text-align: center;
+    margin: 0.5rem;
+    font-size: 7rem;
+
+    &.focused {
+      border: 1rem solid lime;
+    }
+  }
+`;
 
 InputField.defaultProps = {
   className: '',
@@ -96,6 +109,7 @@ InputField.defaultProps = {
   value: '',
   placeholder: '',
   name: '',
+  focusedInput: null,
   onChange: () => {},
 };
 
@@ -106,6 +120,7 @@ InputField.propTypes = {
   value: string,
   placeholder: string,
   onChange: func,
+  focusedInput: number,
 };
 
 export default InputField;

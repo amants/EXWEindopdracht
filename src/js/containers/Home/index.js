@@ -48,7 +48,7 @@ const Home = () => {
 
     if (buttonMapping[gamepadEvent.keyCode] === 'LEFT') {
       focusedFieldNoState = tempFieldFocus - 1;
-      setFocusedObject(prevFocusedObject => parseInt(prevFocusedObject) + 1);
+      setFocusedObject(prevFocusedObject => parseInt(prevFocusedObject) - 1);
     }
 
     if (buttonMapping[gamepadEvent.keyCode] === 'UP') {
@@ -99,14 +99,10 @@ const Home = () => {
         </Label>
         <InputField
           type="text"
+          focusedInput={focusedObject}
           placeholder={isFocused ? 'focused' : 'Username ...'}
           value={username}
           onChange={value => setUsername(value)}
-        />
-        <Button
-          disabled={disabled}
-          value="Start"
-          onClick={() => console.log('submit')}
         />
       </UserNameForm>
     </Container>
@@ -115,7 +111,7 @@ const Home = () => {
 
 const Container = styled.div`
   height: 100vh;
-  width: 100vh;
+  width: 100%;
   background: orangered;
   display: flex;
   justify-content: center;
