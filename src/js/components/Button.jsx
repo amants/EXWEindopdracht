@@ -1,12 +1,12 @@
 import React from 'react';
 import { string, func, bool } from 'prop-types';
 
-const InputField = ({ disabled, value, placeholder, onClick }) => (
+const Button = ({ className, disabled, value, onClick }) => (
   <input
+    className={className}
     type="submit"
     disabled={disabled}
     value={value}
-    placeholder={placeholder}
     onClick={e => {
       e.target.preventDefault();
       onClick();
@@ -14,11 +14,18 @@ const InputField = ({ disabled, value, placeholder, onClick }) => (
   />
 );
 
-InputField.propTypes = {
-  disabled: bool.isRequired,
-  value: string.isRequired,
-  placeholder: string.isRequired,
-  onClick: func.isRequired,
+Button.defaultProps = {
+  className: '',
+  disabled: false,
+  value: 'Send',
+  onClick: () => {},
 };
 
-export default InputField;
+Button.propTypes = {
+  disabled: bool,
+  value: string,
+  onClick: func,
+  className: string,
+};
+
+export default Button;
