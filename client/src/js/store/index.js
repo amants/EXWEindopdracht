@@ -8,7 +8,7 @@ const auth = {
 };
 
 const userData = {
-  username: null,
+  username: 'UNNAMED',
   lastHighScore: 0,
 };
 

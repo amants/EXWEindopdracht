@@ -11,6 +11,7 @@ import { func } from 'prop-types';
 // Containers
 import Home from '../js/containers/Home';
 import Game from '../js/containers/Game';
+import NameChange from '../js/containers/NameChange';
 import Hiscores from '../js/containers/Hiscores';
 import Menu from '../js/containers/Menu';
 
@@ -23,7 +24,8 @@ const Root = () => (
       <Route path="/" component={Home} exact />
       <PrivateRoute path="/menu" component={Menu} exact />
       <PrivateRoute path="/game" component={Game} exact />
-      <PrivateRoute path="/hiscores" component={Hiscores} exact />
+      <PrivateRoute path="/namechange" component={NameChange} exact />
+      <PrivateRoute path="/highscores" component={Hiscores} exact />
     </Switch>
   </Router>
 );

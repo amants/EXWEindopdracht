@@ -20,7 +20,7 @@ const Menu = ({ history }) => {
     const tempFieldFocus = focusedFieldNoState;
     const buttonss = [
       document.querySelector(`.start_game`),
-      document.querySelector(`.hiscores`),
+      document.querySelector(`.highscores`),
       document.querySelector(`.namechange`),
       document.querySelector(`.quitbutton`),
     ];
@@ -90,10 +90,10 @@ const Menu = ({ history }) => {
           Start game
         </Button>
         <Button
-          className={`${focusedButton === 2 ? `focused` : ``} hiscores`}
-          to="/hiscores"
+          className={`${focusedButton === 2 ? `focused` : ``} highscores`}
+          to="/highscores"
         >
-          Hiscores
+          highscores
         </Button>
         <Button
           className={`${focusedButton === 3 ? `focused` : ``} namechange`}
