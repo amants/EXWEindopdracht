@@ -24,6 +24,10 @@ const Home = ({ history }) => {
   let focusedFieldNoState = focusedObject;
 
   useEffect(() => {
+    setOldUsername(storeUsername);
+  }, []);
+
+  useEffect(() => {
     if (username.length < 8) {
       const tempUsername = [...username];
       tempUsername.push(' ');
