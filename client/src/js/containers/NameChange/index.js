@@ -51,28 +51,41 @@ const Home = ({ history }) => {
     }
 
     if (buttonMapping[gamepadEvent.keyCode] === 'RIGHT') {
-      focusedFieldNoState = tempFieldFocus + 1;
-      setFocusedObject(prevFocusedObject => parseInt(prevFocusedObject) + 1);
+      console.log(tempFieldFocus);
+      if (tempFieldFocus < 7) {
+        focusedFieldNoState = tempFieldFocus + 1;
+        setFocusedObject(prevFocusedObject => parseInt(prevFocusedObject) + 1);
+      } else {
+        focusedFieldNoState = 0;
+        setFocusedObject(0);
+      }
     }
 
     if (buttonMapping[gamepadEvent.keyCode] === 'LEFT') {
-      focusedFieldNoState = tempFieldFocus - 1;
-      setFocusedObject(prevFocusedObject => parseInt(prevFocusedObject) - 1);
+      if (tempFieldFocus > 0) {
+        focusedFieldNoState = tempFieldFocus - 1;
+        setFocusedObject(prevFocusedObject => parseInt(prevFocusedObject) - 1);
+      } else {
+        focusedFieldNoState = 7;
+        setFocusedObject(7);
+      }
     }
 
     if (buttonMapping[gamepadEvent.keyCode] === 'UP') {
-      if (
-        tempdata[tempFieldFocus].charCodeAt() > 64 &&
-        tempdata[tempFieldFocus].charCodeAt() < 90
-      ) {
-        tempdata[tempFieldFocus] = String.fromCharCode(
-          tempdata[tempFieldFocus].charCodeAt() + 1,
-        );
-      } else {
-        if (tempdata[tempFieldFocus].charCodeAt() === 32) {
-          tempdata[tempFieldFocus] = String.fromCharCode(65);
-        } else if (tempdata[tempFieldFocus].charCodeAt() === 90) {
-          tempdata[tempFieldFocus] = String.fromCharCode(32);
+      if (tempdata[tempFieldFocus]) {
+        if (
+          tempdata[tempFieldFocus].charCodeAt() > 64 &&
+          tempdata[tempFieldFocus].charCodeAt() < 90
+        ) {
+          tempdata[tempFieldFocus] = String.fromCharCode(
+            tempdata[tempFieldFocus].charCodeAt() + 1,
+          );
+        } else {
+          if (tempdata[tempFieldFocus].charCodeAt() === 32) {
+            tempdata[tempFieldFocus] = String.fromCharCode(65);
+          } else if (tempdata[tempFieldFocus].charCodeAt() === 90) {
+            tempdata[tempFieldFocus] = String.fromCharCode(32);
+          }
         }
       }
       usernameNoState = tempdata;
