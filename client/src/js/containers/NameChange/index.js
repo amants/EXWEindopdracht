@@ -13,6 +13,7 @@ import {
 } from '../../store/index';
 const Home = ({ history }) => {
   const storeUsername = getUsername();
+  const [oldUsername, setOldUsername] = useState(storeUsername);
   const [username, setUsername] = useState(
     storeUsername !== 'UNNAMED'
       ? storeUsername.split('')
@@ -27,6 +28,8 @@ const Home = ({ history }) => {
       const tempUsername = [...username];
       tempUsername.push(' ');
       setUsername(tempUsername);
+      usernameNoState = tempUsername;
+      console.log(tempUsername);
     }
     let joinedName = username.join('').trim();
     console.log(joinedName);
@@ -38,15 +41,18 @@ const Home = ({ history }) => {
   }, [username]);
 
   const { isFocused, ref } = useFocus(gamepadEvent => {
-    console.log(gamepadEvent.keyCode);
+    console.log(usernameNoState);
     const tempdata = [...usernameNoState];
     const tempFieldFocus = focusedFieldNoState;
+    while (tempdata.length < 8) {
+      tempdata.push(' ');
+    }
     if (buttonMapping[gamepadEvent.keyCode] === 'X') {
       history.push('/menu');
     }
 
     if (buttonMapping[gamepadEvent.keyCode] === 'O') {
-      console.log('going back');
+      setUsernameStore(oldUsername);
       history.push('/menu');
     }
 
@@ -92,7 +98,7 @@ const Home = ({ history }) => {
       setUsername(tempdata);
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'DOWN') {
-      console.log(tempdata[tempFieldFocus].charCodeAt());
+      console.log(tempdata, tempFieldFocus);
       if (
         tempdata[tempFieldFocus].charCodeAt() > 65 &&
         tempdata[tempFieldFocus].charCodeAt() < 91
@@ -101,6 +107,7 @@ const Home = ({ history }) => {
           tempdata[tempFieldFocus].charCodeAt() - 1,
         );
       } else {
+        console.log(tempFieldFocus, tempdata);
         console.log(tempdata[tempFieldFocus].charCodeAt());
         if (tempdata[tempFieldFocus].charCodeAt() === 32) {
           tempdata[tempFieldFocus] = String.fromCharCode(90);

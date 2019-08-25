@@ -34,7 +34,6 @@ const Home = ({ history }) => {
   }, [username]);
 
   const { isFocused, ref } = useFocus(gamepadEvent => {
-    console.log(gamepadEvent.keyCode);
     const tempdata = [...usernameNoState];
     const tempFieldFocus = focusedFieldNoState;
     if (buttonMapping[gamepadEvent.keyCode] === 'X') {
