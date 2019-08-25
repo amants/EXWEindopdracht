@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import styled from 'styled-components';
 const Home = () => {
+  const [currentScore, setCurrentScore] = useState(0);
   let renderer, sun, scene;
   let sceneWidth;
   let sceneHeight;
@@ -32,13 +33,8 @@ const Home = () => {
   let particleCount = 20;
   let explosionPower = 1.06;
   let particles;
-  let scoreText;
-  let score;
-  let hasCollided;
 
   const createScene = () => {
-    hasCollided = false;
-    score = 0;
     treesInPath = [];
     treesPool = [];
     clock = new THREE.Clock();
@@ -76,17 +72,6 @@ const Home = () => {
     window.addEventListener('resize', onWindowResize, false); //resize callback
 
     document.onkeydown = handleKeyDown;
-
-    scoreText = document.createElement('div');
-    scoreText.style.position = 'absolute';
-    //text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
-    scoreText.style.width = 100;
-    scoreText.style.height = 100;
-    //scoreText.style.backgroundColor = "blue";
-    scoreText.innerHTML = '0';
-    scoreText.style.top = 50 + 'px';
-    scoreText.style.left = 10 + 'px';
-    document.body.appendChild(scoreText);
   };
 
   const addExplosion = () => {
@@ -162,7 +147,7 @@ const Home = () => {
     currentLane = middleLane;
     heroSphere.position.x = currentLane;
   };
-  function addWorld() {
+  const addWorld = () => {
     let sides = 40;
     let tiers = 40;
     let sphereGeometry = new THREE.SphereGeometry(worldRadius, sides, tiers);
@@ -214,8 +199,9 @@ const Home = () => {
     rollingGroundSphere.position.y = -24;
     rollingGroundSphere.position.z = 2;
     addWorldTrees();
-  }
-  function addLight() {
+  };
+
+  const addLight = () => {
     let hemisphereLight = new THREE.HemisphereLight(0xfffafa, 0x000000, 0.9);
     scene.add(hemisphereLight);
     sun = new THREE.DirectionalLight(0xcdc1c5, 0.9);
@@ -227,7 +213,8 @@ const Home = () => {
     sun.shadow.mapSize.height = 256;
     sun.shadow.camera.near = 0.5;
     sun.shadow.camera.far = 50;
-  }
+  };
+
   const addPathTree = () => {
     let options = [0, 1, 2];
     let lane = Math.floor(Math.random() * 3);
@@ -283,7 +270,7 @@ const Home = () => {
     let scalarMultiplier = Math.random() * (0.25 - 0.1) + 0.05;
     let treeGeometry = new THREE.ConeGeometry(0.5, 1, sides, tiers);
     let treeMaterial = new THREE.MeshStandardMaterial({
-      color: 0x33ff33,
+      color: 0xff8000,
       shading: THREE.FlatShading,
     });
     blowUpTree(treeGeometry.vertices, sides, 0, scalarMultiplier);
@@ -377,16 +364,11 @@ const Home = () => {
       if (clock.getElapsedTime() > treeReleaseInterval) {
         clock.start();
         addPathTree();
-        if (!hasCollided) {
-          score += 2 * treeReleaseInterval;
-          scoreText.innerHTML = score.toString();
-        }
       }
       doTreeLogic();
       doExplosionLogic();
       render();
       renderID = requestAnimationFrame(update); //request next update
-      console.log(renderID);
     }
   };
 
@@ -394,7 +376,7 @@ const Home = () => {
     let oneTree;
     let treePos = new THREE.Vector3();
     let treesToRemove = [];
-    treesInPath.forEach(function(element, index) {
+    treesInPath.forEach((element, index) => {
       oneTree = treesInPath[index];
       treePos.setFromMatrixPosition(oneTree.matrixWorld);
       if (treePos.z > 6 && oneTree.visible) {
@@ -404,18 +386,18 @@ const Home = () => {
         //check collision
         if (treePos.distanceTo(heroSphere.position) <= 0.6) {
           gameOver();
-          hasCollided = true;
           explode();
         }
       }
     });
     let fromWhere;
-    treesToRemove.forEach(function(element, index) {
+    treesToRemove.forEach((element, index) => {
       oneTree = treesToRemove[index];
       fromWhere = treesInPath.indexOf(oneTree);
       treesInPath.splice(fromWhere, 1);
       treesPool.push(oneTree);
       oneTree.visible = false;
+      setCurrentScore(prevCurrentScore => (prevCurrentScore += 1));
       console.log('remove tree');
     });
   };
@@ -432,7 +414,7 @@ const Home = () => {
     }
     particleGeometry.verticesNeedUpdate = true;
   };
-  function explode() {
+  const explode = () => {
     particles.position.y = 2;
     particles.position.z = 4.8;
     particles.position.x = heroSphere.position.x;
@@ -445,7 +427,8 @@ const Home = () => {
     }
     explosionPower = 1.07;
     particles.visible = true;
-  }
+  };
+
   const render = () => {
     renderer.render(scene, camera); //draw
   };
@@ -476,11 +459,26 @@ const Home = () => {
   }, []);
   return (
     <Container>
-      <h1>test</h1>
+      <Score>
+        <CurrentScore>{currentScore}</CurrentScore>
+      </Score>
       <GameContainer id="gameContainer" />
     </Container>
   );
 };
+
+const CurrentScore = styled.h3`
+  font-size: 4rem;
+  font-weight: 900;
+  color: #151515;
+`;
+
+const Score = styled.div`
+  position: absolute;
+  top: 4rem;
+  right: 4rem;
+  z-index: 999;
+`;
 
 const Container = styled.div`
   position: absolute;

@@ -33,10 +33,8 @@ const Home = ({ history }) => {
       tempUsername.push(' ');
       setUsername(tempUsername);
       usernameNoState = tempUsername;
-      console.log(tempUsername);
     }
     let joinedName = username.join('').trim();
-    console.log(joinedName);
     if (joinedName.length > 0) {
       setUsernameStore(joinedName);
     } else {
@@ -45,7 +43,6 @@ const Home = ({ history }) => {
   }, [username]);
 
   const { isFocused, ref } = useFocus(gamepadEvent => {
-    console.log(usernameNoState);
     const tempdata = [...usernameNoState];
     const tempFieldFocus = focusedFieldNoState;
     while (tempdata.length < 8) {
@@ -61,7 +58,6 @@ const Home = ({ history }) => {
     }
 
     if (buttonMapping[gamepadEvent.keyCode] === 'RIGHT') {
-      console.log(tempFieldFocus);
       if (tempFieldFocus < 7) {
         focusedFieldNoState = tempFieldFocus + 1;
         setFocusedObject(prevFocusedObject => parseInt(prevFocusedObject) + 1);
@@ -102,7 +98,6 @@ const Home = ({ history }) => {
       setUsername(tempdata);
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'DOWN') {
-      console.log(tempdata, tempFieldFocus);
       if (
         tempdata[tempFieldFocus].charCodeAt() > 65 &&
         tempdata[tempFieldFocus].charCodeAt() < 91
@@ -111,8 +106,6 @@ const Home = ({ history }) => {
           tempdata[tempFieldFocus].charCodeAt() - 1,
         );
       } else {
-        console.log(tempFieldFocus, tempdata);
-        console.log(tempdata[tempFieldFocus].charCodeAt());
         if (tempdata[tempFieldFocus].charCodeAt() === 32) {
           tempdata[tempFieldFocus] = String.fromCharCode(90);
         } else if (tempdata[tempFieldFocus].charCodeAt() === 65) {
