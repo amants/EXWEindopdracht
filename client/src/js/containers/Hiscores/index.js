@@ -1,5 +1,5 @@
 // Dependencies
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import { useFocus } from 'joystick-react';
 import { shape } from 'prop-types';
@@ -10,7 +10,9 @@ import { getHighscores, buttonMapping, getUsername } from '../../store/index';
 
 const Home = ({ history }) => {
   const [highScores, setHighScores] = useState([]);
-  getHighscores().then(res => setHighScores(res.data));
+  useEffect(() => {
+    getHighscores().then(res => setHighScores(res.data));
+  }, []);
   let rowId = 1;
   const { isFocused, ref } = useFocus(gamepadEvent => {
     if (buttonMapping[gamepadEvent.keyCode] === 'O') {
@@ -37,6 +39,7 @@ const Home = ({ history }) => {
               <TD>{rowId}</TD>
               <TD>{obj.username}</TD>
               <TD>{obj.score}</TD>
+              {(rowId += 1)}
             </tr>
           ))}
         </Tbody>

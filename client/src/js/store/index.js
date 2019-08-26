@@ -22,9 +22,17 @@ const buttonMapping = {
   14: 'LEFT',
 };
 
-const setHighscore = score => console.log(score);
-
 const getHighscores = () => api.getHighscores();
+
+const setHighscore = score => {
+  if (score > userData.lastHighScore) {
+    userData.lastHighScore = score;
+  }
+  return api.setHighscore({
+    username: userData.username,
+    score,
+  });
+};
 
 const getUsername = () => userData.username;
 

@@ -10,6 +10,11 @@ api = create({
 class ApiRoutes {
   getHighscores = () =>
     api.get('getHighScores').then(response => response.data);
+
+  setHighscore = payload => {
+    console.log(payload);
+    return api.post('setHighscore', payload).then(response => response.data);
+  };
 }
 
 export default ApiRoutes;
