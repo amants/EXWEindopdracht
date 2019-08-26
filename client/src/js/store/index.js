@@ -15,11 +15,14 @@ const userData = {
 const buttonMapping = {
   0: 'X',
   1: 'O',
+  9: 'PAUSE',
   12: 'UP',
   15: 'RIGHT',
   13: 'DOWN',
   14: 'LEFT',
 };
+
+const setHighscore = score => console.log(score);
 
 const getHighscores = () => api.getHighscores();
 
@@ -41,4 +44,5 @@ export {
   updateLastHighScore,
   buttonMapping,
   getUsername,
+  setHighscore,
 };

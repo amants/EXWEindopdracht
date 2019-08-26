@@ -34,11 +34,6 @@ const Menu = ({ history }) => {
       console.log('going back');
       history.push('/');
     }
-    if (buttonMapping[gamepadEvent.keyCode] === 'UP') {
-      Object.keys(buttonss).map((key, i) => {
-        console.log(key, i);
-      });
-    }
     if (buttonMapping[gamepadEvent.keyCode] === 'DOWN') {
       buttonss.map((key, i) => {
         console.log(i, focusedButton);
@@ -58,9 +53,7 @@ const Menu = ({ history }) => {
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'UP') {
       buttonss.map((key, i) => {
-        console.log(i, focusedButton);
         if (i === focusedButton) {
-          console.log(focusedFieldNoState, buttonss.length);
           if (focusedFieldNoState <= 1) {
             focusedFieldNoState = buttonss.length;
             setFocusedButton(buttonss.length);

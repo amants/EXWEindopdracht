@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import styled from 'styled-components';
+import { useFocus } from 'joystick-react';
 import { Link } from 'react-router-dom';
+
+import { buttonMapping, setHighscore } from '../../store/index';
 
 const Home = () => {
   const [currentScore, setCurrentScore] = useState(0);
   const [isGameOver, setGameOver] = useState(false);
+  const [isPaused, setPaused] = useState(false);
   const [focusedButton, setFocusedButton] = useState(1);
-  console.log(setFocusedButton);
   let renderer, sun, scene;
   let sceneWidth;
   let sceneHeight;
+  let isGameOverNoState;
+  let isPausedNoState;
   let camera;
   let dom;
   let rollingGroundSphere;
@@ -19,7 +24,6 @@ const Home = () => {
   let playerRollingSpeed;
   let worldRadius = 26;
   let playerRadius = 0.2;
-  let paused = false;
   let sphericalHelper;
   let pathAngleValues;
   let playerY = 2;
@@ -31,6 +35,85 @@ const Home = () => {
   let treeReleaseInterval = 0.5;
   let treesInPath;
   let treesPool;
+  let focusedFieldNoState = focusedButton;
+
+  const { isFocused, ref } = useFocus(gamepadEvent => {
+    console.log(gamepadEvent.keyCode);
+    const buttonss = isGameOverNoState
+      ? [document.querySelector(`.menu`), document.querySelector(`.highscores`)]
+      : [document.querySelector(`.resume`), document.querySelector(`.menu`)];
+    if (buttonMapping[gamepadEvent.keyCode] === 'PAUSE') {
+      if (!isGameOverNoState) {
+        setPaused(prevPaused => {
+          console.log(prevPaused);
+          isPausedNoState = !prevPaused;
+          return !prevPaused;
+        });
+      }
+    }
+    if (buttonMapping[gamepadEvent.keyCode] === 'LEFT') {
+      if (!isPausedNoState) {
+        handleKeyDown({ keyCode: 37 });
+      }
+    }
+    if (buttonMapping[gamepadEvent.keyCode] === 'RIGHT') {
+      if (!isPausedNoState) {
+        handleKeyDown({ keyCode: 39 });
+      }
+    }
+    if (buttonMapping[gamepadEvent.keyCode] === 'UP') {
+      const tempFieldFocus = focusedFieldNoState;
+      buttonss.map((key, i) => {
+        if (i === focusedButton) {
+          if (focusedFieldNoState <= 1) {
+            focusedFieldNoState = buttonss.length;
+            setFocusedButton(buttonss.length);
+          } else {
+            focusedFieldNoState = tempFieldFocus - 1;
+            setFocusedButton(
+              prevFocusedButton => parseInt(prevFocusedButton) - 1,
+            );
+          }
+        }
+      });
+    }
+    if (buttonMapping[gamepadEvent.keyCode] === 'DOWN') {
+      const tempFieldFocus = focusedFieldNoState;
+      buttonss.map((key, i) => {
+        console.log(i, focusedButton);
+        if (i === focusedButton) {
+          console.log(focusedFieldNoState, buttonss.length);
+          if (focusedFieldNoState === buttonss.length) {
+            focusedFieldNoState = 1;
+            setFocusedButton(1);
+          } else {
+            focusedFieldNoState = tempFieldFocus + 1;
+            setFocusedButton(
+              prevFocusedButton => parseInt(prevFocusedButton) + 1,
+            );
+          }
+        }
+      });
+    }
+    if (buttonMapping[gamepadEvent.keyCode] === 'X') {
+      const tempFieldFocus = focusedFieldNoState;
+      console.log('test');
+      console.log(
+        'resume',
+        buttonss[tempFieldFocus - 1].classList.contains('resume'),
+      );
+      if (buttonss[tempFieldFocus - 1].classList.contains('resume')) {
+        console.log('dafaq');
+        setPaused(prevPaused => {
+          console.log(prevPaused);
+          isPausedNoState = !prevPaused;
+          return !prevPaused;
+        });
+      } else {
+        buttonss[tempFieldFocus - 1].click();
+      }
+    }
+  });
 
   const createScene = () => {
     treesInPath = [];
@@ -213,7 +296,6 @@ const Home = () => {
       if (treesPool.length == 0) return;
       newTree = treesPool.pop();
       newTree.visible = true;
-      //console.log("add tree");
       treesInPath.push(newTree);
       sphericalHelper.set(
         worldRadius - 0.3,
@@ -262,24 +344,40 @@ const Home = () => {
   };
 
   const update = () => {
-    //stats.update();
-    //animate
-    if (!paused) {
-      rollingGroundSphere.rotation.x += rollingSpeed;
-      playerSphere.rotation.x -= playerRollingSpeed;
-      playerSphere.position.x = THREE.Math.lerp(
-        playerSphere.position.x,
-        currentLane,
-        2 * clock.getDelta(),
-      ); //clock.getElapsedTime());
+    console.log('update: ', isPausedNoState, isGameOverNoState);
+    if (isPausedNoState === undefined) isPausedNoState = false;
+    if (isGameOverNoState === undefined) isGameOverNoState = false;
+    rollingGroundSphere.rotation.x +=
+      isPausedNoState || isGameOverNoState ? 0 : rollingSpeed;
+    playerSphere.rotation.x -=
+      isPausedNoState || isGameOverNoState ? 0 : playerRollingSpeed;
+    playerSphere.position.x = THREE.Math.lerp(
+      playerSphere.position.x,
+      currentLane,
+      2 * clock.getDelta(),
+    ); //clock.getElapsedTime());
+    if (!(isPausedNoState || isGameOverNoState)) {
       if (clock.getElapsedTime() > treeReleaseInterval) {
         clock.start();
         addPathTree();
+        switch (currentScore) {
+          case 20:
+            treeReleaseInterval *= 0.95;
+            break;
+          case 40:
+            treeReleaseInterval *= 0.9;
+            break;
+          case 60:
+            treeReleaseInterval *= 0.85;
+            break;
+          default:
+            break;
+        }
       }
-      doTreeLogic();
-      render();
-      requestAnimationFrame(update); //request next update
     }
+    doTreeLogic();
+    render();
+    if (!isGameOverNoState) requestAnimationFrame(update); //request next update
   };
 
   const doTreeLogic = () => {
@@ -316,7 +414,6 @@ const Home = () => {
         rollingSpeed *= 1.3;
       }
       setCurrentScore(prevCurrentScore => (prevCurrentScore += 1));
-      console.log('remove tree');
     });
   };
 
@@ -325,14 +422,15 @@ const Home = () => {
   };
 
   const gameOver = () => {
-    paused = true;
-    console.log('game over');
     setGameOver(true);
-    // window.clearInterval(powerupSpawnIntervalID);
+    setCurrentScore(prevCurrentScore => {
+      setHighscore(prevCurrentScore);
+      return prevCurrentScore;
+    });
+    isGameOverNoState = true;
   };
 
   const onWindowResize = () => {
-    //resize & align
     sceneHeight = window.innerHeight;
     sceneWidth = window.innerWidth;
     renderer.setSize(sceneWidth, sceneHeight);
@@ -348,8 +446,9 @@ const Home = () => {
   useEffect(() => {
     init();
   }, []);
+  console.log(isFocused);
   return (
-    <Container>
+    <Container ref={ref}>
       {isGameOver ? (
         <GameOverScreen>
           <TitleContainer>
@@ -358,19 +457,38 @@ const Home = () => {
           </TitleContainer>
           <ButtonContainer>
             <Button
-              className={`${focusedButton === 1 ? `focused` : ``} start_game`}
-              to="/game"
+              className={`${focusedButton === 1 ? `focused` : ``} menu`}
+              to="/menu"
             >
-              Play again
-            </Button>
-            <Button
-              className={`${focusedButton === 3 ? `focused` : ``} namechange`}
-              to="/hiscores"
-            >
-              Highscores
+              Menu
             </Button>
             <Button
               className={`${focusedButton === 2 ? `focused` : ``} highscores`}
+              to="/highscores"
+            >
+              Highscores
+            </Button>
+          </ButtonContainer>
+        </GameOverScreen>
+      ) : null}
+      {isPaused ? (
+        <GameOverScreen>
+          <TitleContainer>
+            <Title>The Game</Title>
+            <Username>Paused</Username>
+          </TitleContainer>
+          <ButtonContainer>
+            <Button
+              className={`${focusedButton === 1 ? `focused` : ``} resume`}
+              to="/menu"
+              onClick={e => {
+                e.preventDefault();
+              }}
+            >
+              Resume
+            </Button>
+            <Button
+              className={`${focusedButton === 2 ? `focused` : ``} menu`}
               to="/menu"
             >
               Menu
