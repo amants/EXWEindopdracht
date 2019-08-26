@@ -4,13 +4,18 @@ import styled from 'styled-components';
 import { useFocus } from 'joystick-react';
 import { Link } from 'react-router-dom';
 
-import { buttonMapping, setHighscore } from '../../store/index';
+import {
+  buttonMapping,
+  setHighscore,
+  getLastHighScore,
+} from '../../store/index';
 
 const Home = () => {
   const [currentScore, setCurrentScore] = useState(0);
   const [isGameOver, setGameOver] = useState(false);
   const [isPaused, setPaused] = useState(false);
   const [focusedButton, setFocusedButton] = useState(1);
+  const [lastHighScore, setLastHighScore] = useState(getLastHighScore());
   let renderer, sun, scene;
   let sceneWidth;
   let sceneHeight;
@@ -421,6 +426,7 @@ const Home = () => {
     setGameOver(true);
     setCurrentScore(prevCurrentScore => {
       setHighscore(prevCurrentScore);
+      setLastHighScore(prevCurrentScore);
       return prevCurrentScore;
     });
     isGameOverNoState = true;
@@ -493,12 +499,18 @@ const Home = () => {
         </GameOverScreen>
       ) : null}
       <Score>
-        <CurrentScore>{currentScore}</CurrentScore>
+        <CurrentScore>Score: {currentScore}</CurrentScore>
+        <HighScore>Highscore: {lastHighScore}</HighScore>
       </Score>
       <GameContainer id="gameContainer" />
     </Container>
   );
 };
+
+const HighScore = styled.h5`
+  font-size: 2rem;
+  margin-top: 0.5rem;
+`;
 
 const TitleContainer = styled.div`
   position: absolute;
@@ -577,6 +589,10 @@ const GameOverScreen = styled.div`
 
 const Score = styled.div`
   position: absolute;
+  padding: 2rem;
+  background: white;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.65);
+  border-radius: 1rem;
   top: 4rem;
   right: 4rem;
   z-index: 100;

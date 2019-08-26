@@ -26,13 +26,15 @@ const getHighscores = () => api.getHighscores();
 
 const setHighscore = score => {
   if (score > userData.lastHighScore) {
-    userData.lastHighScore = score;
+    updateLastHighScore(score);
   }
   return api.setHighscore({
     username: userData.username,
     score,
   });
 };
+
+const getLastHighScore = () => userData.lastHighScore;
 
 const getUsername = () => userData.username;
 
@@ -49,6 +51,7 @@ export {
   auth,
   getHighscores,
   setUsernameStore,
+  getLastHighScore,
   updateLastHighScore,
   buttonMapping,
   getUsername,
