@@ -30,7 +30,7 @@ const Home = () => {
   let treesInPath;
   let treesPool;
   let particleGeometry;
-  let particleCount = 20;
+  let particleCount = 30;
   let explosionPower = 1.06;
   let particles;
 
@@ -45,7 +45,7 @@ const Home = () => {
     sceneWidth = window.innerWidth;
     sceneHeight = window.innerHeight;
     scene = new THREE.Scene(); //the 3d scene
-    scene.fog = new THREE.FogExp2(0xf0fff0, 0.14);
+    scene.fog = new THREE.FogExp2(0x151515, 0.1);
     camera = new THREE.PerspectiveCamera(
       60,
       sceneWidth / sceneHeight,
@@ -62,6 +62,7 @@ const Home = () => {
     //stats = new Stats();
     //dom.appendChild(stats.dom);
     createTreesPool();
+    addSkyBox();
     addWorld();
     addHero();
     addLight();
@@ -135,7 +136,7 @@ const Home = () => {
   const addHero = () => {
     let sphereGeometry = new THREE.DodecahedronGeometry(heroRadius, 1);
     let sphereMaterial = new THREE.MeshStandardMaterial({
-      color: 0xe5f2f2,
+      color: 0xff8000,
       shading: THREE.FlatShading,
     });
     heroSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
@@ -147,12 +148,20 @@ const Home = () => {
     currentLane = middleLane;
     heroSphere.position.x = currentLane;
   };
+
+  const addSkyBox = () => {
+    const geometry = new THREE.CubeGeometry(10000, 10000, 10000);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+  };
+
   const addWorld = () => {
     let sides = 40;
     let tiers = 40;
     let sphereGeometry = new THREE.SphereGeometry(worldRadius, sides, tiers);
     let sphereMaterial = new THREE.MeshStandardMaterial({
-      color: 0xfffafa,
+      color: 0x151515,
       shading: THREE.FlatShading,
     });
 
@@ -265,26 +274,16 @@ const Home = () => {
     rollingGroundSphere.add(newTree);
   };
   const createTree = () => {
-    let sides = 8;
-    let tiers = 6;
-    let scalarMultiplier = Math.random() * (0.25 - 0.1) + 0.05;
-    let treeGeometry = new THREE.ConeGeometry(0.5, 1, sides, tiers);
+    let treeGeometry = new THREE.CubeGeometry(2, 2, 2);
     let treeMaterial = new THREE.MeshStandardMaterial({
-      color: 0xff8000,
+      color: 0x00ff00,
       shading: THREE.FlatShading,
     });
-    blowUpTree(treeGeometry.vertices, sides, 0, scalarMultiplier);
-    tightenTree(treeGeometry.vertices, sides, 1);
-    blowUpTree(treeGeometry.vertices, sides, 2, scalarMultiplier * 1.1, true);
-    tightenTree(treeGeometry.vertices, sides, 3);
-    blowUpTree(treeGeometry.vertices, sides, 4, scalarMultiplier * 1.2);
-    tightenTree(treeGeometry.vertices, sides, 5);
     let treeTop = new THREE.Mesh(treeGeometry, treeMaterial);
-    treeTop.castShadow = true;
-    treeTop.receiveShadow = false;
-    treeTop.position.y = 0.9;
+    treeTop.receiveShadow = true;
+    treeTop.position.y = 3;
     treeTop.rotation.y = Math.random() * Math.PI;
-    let treeTrunkGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.5);
+    let treeTrunkGeometry = new THREE.CylinderGeometry(0.2, 0.2, 5);
     let trunkMaterial = new THREE.MeshStandardMaterial({
       color: 0x886633,
       shading: THREE.FlatShading,
@@ -295,54 +294,6 @@ const Home = () => {
     tree.add(treeTrunk);
     tree.add(treeTop);
     return tree;
-  };
-
-  const blowUpTree = (vertices, sides, currentTier, scalarMultiplier, odd) => {
-    let vertexIndex;
-    let vertexVector = new THREE.Vector3();
-    let midPointVector = vertices[0].clone();
-    let offset;
-    for (let i = 0; i < sides; i++) {
-      vertexIndex = currentTier * sides + 1;
-      vertexVector = vertices[i + vertexIndex].clone();
-      midPointVector.y = vertexVector.y;
-      offset = vertexVector.sub(midPointVector);
-      if (odd) {
-        if (i % 2 === 0) {
-          offset.normalize().multiplyScalar(scalarMultiplier / 6);
-          vertices[i + vertexIndex].add(offset);
-        } else {
-          offset.normalize().multiplyScalar(scalarMultiplier);
-          vertices[i + vertexIndex].add(offset);
-          vertices[i + vertexIndex].y =
-            vertices[i + vertexIndex + sides].y + 0.05;
-        }
-      } else {
-        if (i % 2 !== 0) {
-          offset.normalize().multiplyScalar(scalarMultiplier / 6);
-          vertices[i + vertexIndex].add(offset);
-        } else {
-          offset.normalize().multiplyScalar(scalarMultiplier);
-          vertices[i + vertexIndex].add(offset);
-          vertices[i + vertexIndex].y =
-            vertices[i + vertexIndex + sides].y + 0.05;
-        }
-      }
-    }
-  };
-  const tightenTree = (vertices, sides, currentTier) => {
-    let vertexIndex;
-    let vertexVector = new THREE.Vector3();
-    let midPointVector = vertices[0].clone();
-    let offset;
-    for (let i = 0; i < sides; i++) {
-      vertexIndex = currentTier * sides + 1;
-      vertexVector = vertices[i + vertexIndex].clone();
-      midPointVector.y = vertexVector.y;
-      offset = vertexVector.sub(midPointVector);
-      offset.normalize().multiplyScalar(0.06);
-      vertices[i + vertexIndex].sub(offset);
-    }
   };
 
   const update = () => {
