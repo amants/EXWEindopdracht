@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+
 const Home = () => {
   const [currentScore, setCurrentScore] = useState(0);
+  const [isGameOver, setGameOver] = useState(false);
+  const [focusedButton, setFocusedButton] = useState(1);
+  console.log(setFocusedButton);
   let renderer, sun, scene;
   let sceneWidth;
   let sceneHeight;
   let camera;
   let dom;
-  let renderID;
   let rollingGroundSphere;
-  let heroSphere;
+  let playerSphere;
   let rollingSpeed = 0.008;
-  let heroRollingSpeed;
+  let playerRollingSpeed;
   let worldRadius = 26;
-  let heroRadius = 0.2;
+  let playerRadius = 0.2;
   let paused = false;
   let sphericalHelper;
   let pathAngleValues;
-  let heroBaseY = 1.8;
-  let bounceValue = 0.1;
-  let gravity = 0.005;
+  let playerY = 2;
   let leftLane = -1;
   let rightLane = 1;
   let middleLane = 0;
@@ -29,23 +31,19 @@ const Home = () => {
   let treeReleaseInterval = 0.5;
   let treesInPath;
   let treesPool;
-  let particleGeometry;
-  let particleCount = 30;
-  let explosionPower = 1.06;
-  let particles;
 
   const createScene = () => {
     treesInPath = [];
     treesPool = [];
     clock = new THREE.Clock();
     clock.start();
-    heroRollingSpeed = (rollingSpeed * worldRadius) / heroRadius / 5;
+    playerRollingSpeed = (rollingSpeed * worldRadius) / playerRadius / 5;
     sphericalHelper = new THREE.Spherical();
     pathAngleValues = [1.52, 1.57, 1.62];
     sceneWidth = window.innerWidth;
     sceneHeight = window.innerHeight;
     scene = new THREE.Scene(); //the 3d scene
-    scene.fog = new THREE.FogExp2(0x151515, 0.1);
+    scene.fog = new THREE.FogExp2(0x151515, 0.01);
     camera = new THREE.PerspectiveCamera(
       60,
       sceneWidth / sceneHeight,
@@ -64,30 +62,14 @@ const Home = () => {
     createTreesPool();
     addSkyBox();
     addWorld();
-    addHero();
+    addPlayer();
     addLight();
-    addExplosion();
 
     camera.position.z = 6.5;
     camera.position.y = 2.5;
     window.addEventListener('resize', onWindowResize, false); //resize callback
 
     document.onkeydown = handleKeyDown;
-  };
-
-  const addExplosion = () => {
-    particleGeometry = new THREE.Geometry();
-    for (let i = 0; i < particleCount; i++) {
-      let vertex = new THREE.Vector3();
-      particleGeometry.vertices.push(vertex);
-    }
-    let pMaterial = new THREE.ParticleBasicMaterial({
-      color: 0xfffafa,
-      size: 0.2,
-    });
-    particles = new THREE.Points(particleGeometry, pMaterial);
-    scene.add(particles);
-    particles.visible = false;
   };
 
   const createTreesPool = () => {
@@ -100,68 +82,51 @@ const Home = () => {
   };
 
   const handleKeyDown = keyEvent => {
-    console.log('test');
-    let validMove = true;
     if (keyEvent.keyCode === 37) {
       //left
       if (currentLane == middleLane) {
         currentLane = leftLane;
       } else if (currentLane == rightLane) {
         currentLane = middleLane;
-      } else {
-        validMove = false;
       }
     } else if (keyEvent.keyCode === 39) {
-      //right
       if (currentLane == middleLane) {
         currentLane = rightLane;
       } else if (currentLane == leftLane) {
         currentLane = middleLane;
-      } else {
-        validMove = false;
       }
-    } else {
-      if (keyEvent.keyCode === 38) {
-        //up, jump
-        bounceValue = 0.1;
-      }
-      validMove = false;
-    }
-    //heroSphere.position.x=currentLane;
-    if (validMove) {
-      bounceValue = 0.06;
     }
   };
 
-  const addHero = () => {
-    let sphereGeometry = new THREE.DodecahedronGeometry(heroRadius, 1);
+  const addPlayer = () => {
+    let sphereGeometry = new THREE.DodecahedronGeometry(playerRadius, 1);
     let sphereMaterial = new THREE.MeshStandardMaterial({
-      color: 0xff8000,
+      color: 0xffa500,
       shading: THREE.FlatShading,
     });
-    heroSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    heroSphere.receiveShadow = true;
-    heroSphere.castShadow = true;
-    scene.add(heroSphere);
-    heroSphere.position.y = heroBaseY;
-    heroSphere.position.z = 4.8;
+    playerSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+    playerSphere.receiveShadow = true;
+    playerSphere.castShadow = true;
+    scene.add(playerSphere);
+    playerSphere.position.y = playerY;
+    playerSphere.position.z = 4.6;
     currentLane = middleLane;
-    heroSphere.position.x = currentLane;
+    playerSphere.position.x = currentLane;
   };
 
   const addSkyBox = () => {
     const geometry = new THREE.CubeGeometry(10000, 10000, 10000);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const material = new THREE.MeshBasicMaterial({ color: 0xff4500 });
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
   };
 
   const addWorld = () => {
-    let sides = 40;
-    let tiers = 40;
+    let sides = 100;
+    let tiers = 100;
     let sphereGeometry = new THREE.SphereGeometry(worldRadius, sides, tiers);
     let sphereMaterial = new THREE.MeshStandardMaterial({
-      color: 0x151515,
+      color: 0x666666,
       shading: THREE.FlatShading,
     });
 
@@ -276,7 +241,7 @@ const Home = () => {
   const createTree = () => {
     let treeGeometry = new THREE.CubeGeometry(2, 2, 2);
     let treeMaterial = new THREE.MeshStandardMaterial({
-      color: 0x00ff00,
+      color: 0xff4500,
       shading: THREE.FlatShading,
     });
     let treeTop = new THREE.Mesh(treeGeometry, treeMaterial);
@@ -289,7 +254,7 @@ const Home = () => {
       shading: THREE.FlatShading,
     });
     let treeTrunk = new THREE.Mesh(treeTrunkGeometry, trunkMaterial);
-    treeTrunk.position.y = 0.25;
+    treeTrunk.position.y = 0;
     let tree = new THREE.Object3D();
     tree.add(treeTrunk);
     tree.add(treeTop);
@@ -301,25 +266,19 @@ const Home = () => {
     //animate
     if (!paused) {
       rollingGroundSphere.rotation.x += rollingSpeed;
-      heroSphere.rotation.x -= heroRollingSpeed;
-      if (heroSphere.position.y <= heroBaseY) {
-        bounceValue = Math.random() * 0.04 + 0.005;
-      }
-      heroSphere.position.y += bounceValue;
-      heroSphere.position.x = THREE.Math.lerp(
-        heroSphere.position.x,
+      playerSphere.rotation.x -= playerRollingSpeed;
+      playerSphere.position.x = THREE.Math.lerp(
+        playerSphere.position.x,
         currentLane,
         2 * clock.getDelta(),
       ); //clock.getElapsedTime());
-      bounceValue -= gravity;
       if (clock.getElapsedTime() > treeReleaseInterval) {
         clock.start();
         addPathTree();
       }
       doTreeLogic();
-      doExplosionLogic();
       render();
-      renderID = requestAnimationFrame(update); //request next update
+      requestAnimationFrame(update); //request next update
     }
   };
 
@@ -335,9 +294,8 @@ const Home = () => {
         treesToRemove.push(oneTree);
       } else {
         //check collision
-        if (treePos.distanceTo(heroSphere.position) <= 0.6) {
+        if (treePos.distanceTo(playerSphere.position) <= 0.6) {
           gameOver();
-          explode();
         }
       }
     });
@@ -348,36 +306,18 @@ const Home = () => {
       treesInPath.splice(fromWhere, 1);
       treesPool.push(oneTree);
       oneTree.visible = false;
+      if (currentScore === 20) {
+        rollingSpeed *= 10;
+      }
+      if (currentScore === 40) {
+        rollingSpeed *= 1.3;
+      }
+      if (currentScore === 60) {
+        rollingSpeed *= 1.3;
+      }
       setCurrentScore(prevCurrentScore => (prevCurrentScore += 1));
       console.log('remove tree');
     });
-  };
-
-  const doExplosionLogic = () => {
-    if (!particles.visible) return;
-    for (let i = 0; i < particleCount; i++) {
-      particleGeometry.vertices[i].multiplyScalar(explosionPower);
-    }
-    if (explosionPower > 1.005) {
-      explosionPower -= 0.001;
-    } else {
-      particles.visible = false;
-    }
-    particleGeometry.verticesNeedUpdate = true;
-  };
-  const explode = () => {
-    particles.position.y = 2;
-    particles.position.z = 4.8;
-    particles.position.x = heroSphere.position.x;
-    for (let i = 0; i < particleCount; i++) {
-      let vertex = new THREE.Vector3();
-      vertex.x = -0.2 + Math.random() * 0.4;
-      vertex.y = -0.2 + Math.random() * 0.4;
-      vertex.z = -0.2 + Math.random() * 0.4;
-      particleGeometry.vertices[i] = vertex;
-    }
-    explosionPower = 1.07;
-    particles.visible = true;
   };
 
   const render = () => {
@@ -386,8 +326,8 @@ const Home = () => {
 
   const gameOver = () => {
     paused = true;
-    console.log('game over', renderID);
-    cancelAnimationFrame(renderID);
+    console.log('game over');
+    setGameOver(true);
     // window.clearInterval(powerupSpawnIntervalID);
   };
 
@@ -410,6 +350,34 @@ const Home = () => {
   }, []);
   return (
     <Container>
+      {isGameOver ? (
+        <GameOverScreen>
+          <TitleContainer>
+            <Title>The Game</Title>
+            <Username>Game over</Username>
+          </TitleContainer>
+          <ButtonContainer>
+            <Button
+              className={`${focusedButton === 1 ? `focused` : ``} start_game`}
+              to="/game"
+            >
+              Play again
+            </Button>
+            <Button
+              className={`${focusedButton === 3 ? `focused` : ``} namechange`}
+              to="/hiscores"
+            >
+              Highscores
+            </Button>
+            <Button
+              className={`${focusedButton === 2 ? `focused` : ``} highscores`}
+              to="/menu"
+            >
+              Menu
+            </Button>
+          </ButtonContainer>
+        </GameOverScreen>
+      ) : null}
       <Score>
         <CurrentScore>{currentScore}</CurrentScore>
       </Score>
@@ -418,24 +386,99 @@ const Home = () => {
   );
 };
 
+const TitleContainer = styled.div`
+  position: absolute;
+  top: 4rem;
+  text-transform: uppercase;
+  flex: 0 0 auto;
+  max-width: 80rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.65);
+`;
+
+const Username = styled.h2`
+  position: relative;
+  margin-top: -1rem;
+  font-size: 4rem;
+  background-color: orange;
+  padding: 1rem 3rem;
+  border-radius: 0 0 1rem 1rem;
+  display: 0 0 auto;
+  flex-grow: 0;
+  font-weight: 900;
+  flex-shrink: 0;
+`;
+
+const Title = styled.h1`
+  background: orangered;
+  font-weight: 900;
+  text-transform: uppercase;
+  border-radius: 1rem;
+  padding: 2rem 4rem;
+  padding-top: 1rem;
+  flex: 0 0 auto;
+  max-width: 100%;
+`;
+
+const Button = styled(Link)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.65);
+  height: 6rem;
+  font-size: 3rem;
+  border-radius: 1rem;
+  margin: 2rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: white;
+  font-weight: 900;
+  width: 40rem;
+  background-color: orangered;
+  transition: all 0.2s ease;
+  cursor: none;
+
+  &.focused {
+    border: 0.5rem solid orange;
+    transform: scale(1.1);
+  }
+`;
+
 const CurrentScore = styled.h3`
   font-size: 4rem;
   font-weight: 900;
   color: #151515;
 `;
 
+const GameOverScreen = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 const Score = styled.div`
   position: absolute;
   top: 4rem;
   right: 4rem;
-  z-index: 999;
+  z-index: 100;
 `;
+
+const ButtonContainer = styled.div``;
 
 const Container = styled.div`
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   bottom: 0;
   background-color: #151515;
 `;

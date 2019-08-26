@@ -149,7 +149,8 @@ const Button = styled(Link)`
   cursor: none;
 
   &.focused {
-    border: 0.5rem solid white;
+    border: 0.5rem solid orange;
+    transform: scale(1.1);
   }
 `;
 
