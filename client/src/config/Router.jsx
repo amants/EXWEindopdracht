@@ -31,7 +31,6 @@ const Root = () => (
 );
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
-  console.log(auth);
   if (auth.isAuthenticated) {
     return (
       <Route

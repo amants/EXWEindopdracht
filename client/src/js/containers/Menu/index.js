@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useFocus } from 'joystick-react';
@@ -8,15 +8,9 @@ import { shape } from 'prop-types';
 import { buttonMapping, getUsername } from '../../store/index';
 const Menu = ({ history }) => {
   const [focusedButton, setFocusedButton] = useState(1);
-
-  useEffect(() => console.log(focusedButton, ' focusedButton'), [
-    focusedButton,
-  ]);
-
   let focusedFieldNoState = focusedButton;
 
   const { isFocused, ref } = useFocus(gamepadEvent => {
-    console.log(gamepadEvent.keyCode);
     const tempFieldFocus = focusedFieldNoState;
     const buttonss = [
       document.querySelector(`.start_game`),
@@ -26,19 +20,14 @@ const Menu = ({ history }) => {
     ];
 
     if (buttonMapping[gamepadEvent.keyCode] === 'X') {
-      console.log(buttonss);
-      console.log(document.querySelector('.start_game'));
       buttonss[tempFieldFocus - 1].click();
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'O') {
-      console.log('going back');
       history.push('/');
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'DOWN') {
       buttonss.map((key, i) => {
-        console.log(i, focusedButton);
         if (i === focusedButton) {
-          console.log(focusedFieldNoState, buttonss.length);
           if (focusedFieldNoState === buttonss.length) {
             focusedFieldNoState = 1;
             setFocusedButton(1);
@@ -67,6 +56,7 @@ const Menu = ({ history }) => {
       });
     }
   });
+
   console.log(isFocused);
 
   return (

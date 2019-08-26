@@ -38,14 +38,20 @@ const Home = () => {
   let focusedFieldNoState = focusedButton;
 
   const { isFocused, ref } = useFocus(gamepadEvent => {
-    console.log(gamepadEvent.keyCode);
     const buttonss = isGameOverNoState
       ? [document.querySelector(`.menu`), document.querySelector(`.highscores`)]
       : [document.querySelector(`.resume`), document.querySelector(`.menu`)];
     if (buttonMapping[gamepadEvent.keyCode] === 'PAUSE') {
       if (!isGameOverNoState) {
         setPaused(prevPaused => {
-          console.log(prevPaused);
+          isPausedNoState = !prevPaused;
+          return !prevPaused;
+        });
+      }
+    }
+    if (buttonMapping[gamepadEvent.keyCode] === 'O') {
+      if (!isGameOverNoState && isPausedNoState) {
+        setPaused(prevPaused => {
           isPausedNoState = !prevPaused;
           return !prevPaused;
         });
@@ -80,9 +86,7 @@ const Home = () => {
     if (buttonMapping[gamepadEvent.keyCode] === 'DOWN') {
       const tempFieldFocus = focusedFieldNoState;
       buttonss.map((key, i) => {
-        console.log(i, focusedButton);
         if (i === focusedButton) {
-          console.log(focusedFieldNoState, buttonss.length);
           if (focusedFieldNoState === buttonss.length) {
             focusedFieldNoState = 1;
             setFocusedButton(1);
@@ -97,15 +101,8 @@ const Home = () => {
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'X') {
       const tempFieldFocus = focusedFieldNoState;
-      console.log('test');
-      console.log(
-        'resume',
-        buttonss[tempFieldFocus - 1].classList.contains('resume'),
-      );
       if (buttonss[tempFieldFocus - 1].classList.contains('resume')) {
-        console.log('dafaq');
         setPaused(prevPaused => {
-          console.log(prevPaused);
           isPausedNoState = !prevPaused;
           return !prevPaused;
         });
@@ -344,7 +341,6 @@ const Home = () => {
   };
 
   const update = () => {
-    console.log('update: ', isPausedNoState, isGameOverNoState);
     if (isPausedNoState === undefined) isPausedNoState = false;
     if (isGameOverNoState === undefined) isGameOverNoState = false;
     rollingGroundSphere.rotation.x +=
