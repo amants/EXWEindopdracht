@@ -1,7 +1,8 @@
 <?php
     require_once __DIR__ . '/DAO.php';
     header('Content-Type: application/json');
-    header("Access-Control-Allow-Methods: GET");
+    header("Access-Control-Allow-Methods: GET, POST");
+    header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ORIGIN']}");
 
     class API extends DAO {
         public function getHighScores() {
