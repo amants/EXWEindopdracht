@@ -5,7 +5,12 @@ import { useFocus } from 'joystick-react';
 import { withRouter } from 'react-router-dom';
 import { shape } from 'prop-types';
 
+// Store
 import { buttonMapping, getUsername } from '../../store/index';
+
+// Components
+import ButtonLegend from '../../components/ButtonLegend';
+
 const Menu = ({ history }) => {
   const [focusedButton, setFocusedButton] = useState(1);
   let focusedFieldNoState = focusedButton;
@@ -91,6 +96,14 @@ const Menu = ({ history }) => {
           Quit
         </Button>
       </ButtonContainer>
+      <ButtonLegend
+        up
+        down
+        autohide={false}
+        arrows="Use the arrow keys to navigate the menu"
+        x="Confirm"
+        o="Go back"
+      />
     </Container>
   );
 };

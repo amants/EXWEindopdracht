@@ -4,11 +4,15 @@ import styled from 'styled-components';
 import { useFocus } from 'joystick-react';
 import { Link } from 'react-router-dom';
 
+// Store
 import {
   buttonMapping,
   setHighscore,
   getLastHighScore,
 } from '../../store/index';
+
+// Components
+import ButtonLegend from '../../components/ButtonLegend';
 
 const Home = () => {
   const [currentScore, setCurrentScore] = useState(0);
@@ -503,6 +507,13 @@ const Home = () => {
         <HighScore>Highscore: {lastHighScore}</HighScore>
       </Score>
       <GameContainer id="gameContainer" />
+      <ButtonLegend
+        left
+        right
+        autohide={true}
+        arrows="Use the arrow keys to move left and right"
+        start="Pause game"
+      />
     </Container>
   );
 };

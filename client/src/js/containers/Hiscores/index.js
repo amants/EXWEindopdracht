@@ -8,6 +8,9 @@ import styled from 'styled-components';
 // Store
 import { getHighscores, buttonMapping, getUsername } from '../../store/index';
 
+// Components
+import ButtonLegend from '../../components/ButtonLegend';
+
 const Home = ({ history }) => {
   const [highScores, setHighScores] = useState([]);
   useEffect(() => {
@@ -44,6 +47,7 @@ const Home = ({ history }) => {
           ))}
         </Tbody>
       </Table>
+      <ButtonLegend autohide={true} o="Go back" />
     </Container>
   );
 };

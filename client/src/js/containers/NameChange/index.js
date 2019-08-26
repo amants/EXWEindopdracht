@@ -6,11 +6,16 @@ import InputField from '../../components/InputField';
 import { withRouter } from 'react-router';
 import { shape } from 'prop-types';
 
+// Store
 import {
   buttonMapping,
   setUsernameStore,
   getUsername,
 } from '../../store/index';
+
+// Components
+import ButtonLegend from '../../components/ButtonLegend';
+
 const Home = ({ history }) => {
   const storeUsername = getUsername();
   const [oldUsername, setOldUsername] = useState(storeUsername);
@@ -132,6 +137,16 @@ const Home = ({ history }) => {
           onChange={value => setUsername(value)}
         />
       </UserNameForm>
+      <ButtonLegend
+        up
+        down
+        left
+        right
+        autohide={false}
+        arrows="Use the arrow keys to navigate and change characters of your username"
+        x="Confirm"
+        o="Cancel"
+      />
     </Container>
   );
 };
