@@ -475,6 +475,13 @@ const Home = () => {
               Highscores
             </Button>
           </ButtonContainer>
+          <ButtonLegend
+            up
+            down
+            autohide={false}
+            arrows="Use the arrow keys to navigate the menu"
+            x="Confirm"
+          />
         </GameOverScreen>
       ) : null}
       {isPaused ? (
@@ -500,6 +507,14 @@ const Home = () => {
               Menu
             </Button>
           </ButtonContainer>
+          <ButtonLegend
+            up
+            down
+            autohide={false}
+            arrows="Use the arrow keys to navigate the menu"
+            x="Confirm"
+            o="Resume game"
+          />
         </GameOverScreen>
       ) : null}
       <Score>
