@@ -47,8 +47,8 @@ const Home = () => {
     worldRadius = 26,
     playerRadius = 0.2,
     playerY = 4.35,
-    leftLane = -1.6,
-    rightLane = 1.6,
+    leftLane = -1.2,
+    rightLane = 1.2,
     middleLane = 0,
     rockReleaseInterval = 0.5,
     focusedFieldNoState = focusedButton;
