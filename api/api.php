@@ -24,7 +24,7 @@
                 $response["success"] = true;
             } else {
                 $response["error"] = "The required fields aren't set";
-                $response["success"] = "no";
+                $response["success"] = false;
                 $response["urshit"] = $payload;
             }
             echo(json_encode($response));
@@ -49,7 +49,7 @@
                 $class->setHighscore(json_decode(file_get_contents('php://input'),true));
                 break;
             default:
-                $response["success"] = "no";
+                $response["success"] = false;
                 $response["what"] = $_REQUEST;
                 echo(json_encode($response));
                 break;
