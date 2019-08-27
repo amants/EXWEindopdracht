@@ -3,7 +3,7 @@ import { create } from 'axios';
 let api;
 
 api = create({
-  baseURL: `http://localhost:8888/api.php?do=`,
+  baseURL: `https://samamant.be/exw/api/api.php?do=`,
   timeout: 4000,
 });
 

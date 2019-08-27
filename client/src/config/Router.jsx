@@ -21,11 +21,12 @@ import { auth } from '../js/store/index';
 const Root = () => (
   <Router>
     <Switch>
-      <Route path="/" component={Home} exact />
-      <PrivateRoute path="/menu" component={Menu} exact />
-      <PrivateRoute path="/game" component={Game} exact />
-      <PrivateRoute path="/namechange" component={NameChange} exact />
-      <PrivateRoute path="/highscores" component={Hiscores} exact />
+      <Route path="/exw/game/" component={Home} exact />
+      <PrivateRoute path="/exw/game/menu" component={Menu} exact />
+      <PrivateRoute path="/exw/game/game" component={Game} exact />
+      <PrivateRoute path="/exw/game/namechange" component={NameChange} exact />
+      <PrivateRoute path="/exw/game/highscores" component={Hiscores} exact />
+      <Route component={() => <h1>404: Page not found</h1>} />
     </Switch>
   </Router>
 );
@@ -44,19 +45,19 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     );
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    return (
-      <Route
-        {...rest}
-        render={props => {
-          window.onbeforeunload = null;
-          return <Component {...props} />;
-        }}
-      />
-    );
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   return (
+  //     <Route
+  //       {...rest}
+  //       render={props => {
+  //         window.onbeforeunload = null;
+  //         return <Component {...props} />;
+  //       }}
+  //     />
+  //   );
+  // }
 
-  return <Route render={() => <Redirect to={`/`} />} />;
+  return <Route render={() => <Redirect to={`/exw/game/`} />} />;
 };
 
 PrivateRoute.propTypes = {

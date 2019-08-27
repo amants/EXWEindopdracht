@@ -14,37 +14,44 @@ import {
 // Components
 import ButtonLegend from '../../components/ButtonLegend';
 
+// Images
+import earthImage from '../../../assets/img/earthmap.jpg';
+import earthBumpImage from '../../../assets/img/earthbump.jpg';
+import earthSpecImage from '../../../assets/img/earthspec.jpg';
+
 const Home = () => {
   const [currentScore, setCurrentScore] = useState(0);
   const [isGameOver, setGameOver] = useState(false);
   const [isPaused, setPaused] = useState(false);
   const [focusedButton, setFocusedButton] = useState(1);
   const [lastHighScore, setLastHighScore] = useState(getLastHighScore());
-  let renderer, sun, scene;
-  let sceneWidth;
-  let sceneHeight;
-  let isGameOverNoState;
-  let isPausedNoState;
-  let camera;
-  let dom;
-  let rollingGroundSphere;
-  let playerSphere;
-  let rollingSpeed = 0.008;
-  let playerRollingSpeed;
-  let worldRadius = 26;
-  let playerRadius = 0.2;
-  let sphericalHelper;
-  let pathAngleValues;
-  let playerY = 2;
-  let leftLane = -1;
-  let rightLane = 1;
-  let middleLane = 0;
-  let currentLane;
-  let clock;
-  let treeReleaseInterval = 0.5;
-  let treesInPath;
-  let treesPool;
-  let focusedFieldNoState = focusedButton;
+  let renderer,
+    sun,
+    scene,
+    sceneWidth,
+    sceneHeight,
+    isGameOverNoState,
+    isPausedNoState,
+    camera,
+    dom,
+    rollingGroundSphere,
+    playerSphere,
+    playerRollingSpeed,
+    sphericalHelper,
+    pathAngleValuesRocks,
+    currentLane,
+    clock,
+    rocksInPath,
+    rocksPool,
+    rollingSpeed = 0.008,
+    worldRadius = 26,
+    playerRadius = 0.2,
+    playerY = 4.35,
+    leftLane = -1.2,
+    rightLane = 1.2,
+    middleLane = 0,
+    rockReleaseInterval = 0.5,
+    focusedFieldNoState = focusedButton;
 
   const { isFocused, ref } = useFocus(gamepadEvent => {
     const buttonss = isGameOverNoState
@@ -68,12 +75,12 @@ const Home = () => {
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'LEFT') {
       if (!isPausedNoState) {
-        handleKeyDown({ keyCode: 37 });
+        handleButtonPressed('LEFT');
       }
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'RIGHT') {
       if (!isPausedNoState) {
-        handleKeyDown({ keyCode: 39 });
+        handleButtonPressed('RIGHT');
       }
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'UP') {
@@ -122,17 +129,16 @@ const Home = () => {
   });
 
   const createScene = () => {
-    treesInPath = [];
-    treesPool = [];
+    rocksInPath = [];
+    rocksPool = [];
     clock = new THREE.Clock();
     clock.start();
     playerRollingSpeed = (rollingSpeed * worldRadius) / playerRadius / 5;
     sphericalHelper = new THREE.Spherical();
-    pathAngleValues = [1.52, 1.57, 1.62];
+    pathAngleValuesRocks = [1.53, 1.57, 1.61];
     sceneWidth = window.innerWidth;
     sceneHeight = window.innerHeight;
     scene = new THREE.Scene(); //the 3d scene
-    scene.fog = new THREE.FogExp2(0x151515, 0.01);
     camera = new THREE.PerspectiveCamera(
       60,
       sceneWidth / sceneHeight,
@@ -140,7 +146,7 @@ const Home = () => {
       1000,
     ); //perspective camera
     renderer = new THREE.WebGLRenderer({ alpha: true }); //renderer with transparent backdrop
-    renderer.setClearColor(0xfffafa, 1);
+    renderer.setClearColor(0x151515, 1);
     renderer.shadowMap.enabled = true; //enable shadow
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setSize(sceneWidth, sceneHeight);
@@ -148,37 +154,34 @@ const Home = () => {
     dom.appendChild(renderer.domElement);
     //stats = new Stats();
     //dom.appendChild(stats.dom);
-    createTreesPool();
-    addSkyBox();
+    createrocksPool();
     addWorld();
     addPlayer();
     addLight();
 
     camera.position.z = 6.5;
-    camera.position.y = 2.5;
+    camera.position.y = 4;
     window.addEventListener('resize', onWindowResize, false); //resize callback
-
-    document.onkeydown = handleKeyDown;
   };
 
-  const createTreesPool = () => {
-    let maxTreesInPool = 10;
-    let newTree;
-    for (let i = 0; i < maxTreesInPool; i++) {
-      newTree = createTree();
-      treesPool.push(newTree);
+  const createrocksPool = () => {
+    let maxRocksInPool = 10;
+    let newRock;
+    for (let i = 0; i < maxRocksInPool; i++) {
+      newRock = createRock();
+      rocksPool.push(newRock);
     }
   };
 
-  const handleKeyDown = keyEvent => {
-    if (keyEvent.keyCode === 37) {
+  const handleButtonPressed = event => {
+    if (event === 'LEFT') {
       //left
       if (currentLane == middleLane) {
         currentLane = leftLane;
       } else if (currentLane == rightLane) {
         currentLane = middleLane;
       }
-    } else if (keyEvent.keyCode === 39) {
+    } else if (event === 'RIGHT') {
       if (currentLane == middleLane) {
         currentLane = rightLane;
       } else if (currentLane == leftLane) {
@@ -188,72 +191,29 @@ const Home = () => {
   };
 
   const addPlayer = () => {
-    let sphereGeometry = new THREE.DodecahedronGeometry(playerRadius, 1);
-    let sphereMaterial = new THREE.MeshStandardMaterial({
-      color: 0xffa500,
-      shading: THREE.FlatShading,
+    let sphereGeometry = new THREE.SphereGeometry(playerRadius, 32, 32);
+    let sphereMaterial = new THREE.MeshPhongMaterial({
+      color: 0xcdcdcd,
+      flatShading: THREE.FlatShading,
     });
     playerSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     playerSphere.receiveShadow = true;
     playerSphere.castShadow = true;
-    scene.add(playerSphere);
     playerSphere.position.y = playerY;
     playerSphere.position.z = 4.6;
     currentLane = middleLane;
     playerSphere.position.x = currentLane;
-  };
-
-  const addSkyBox = () => {
-    const geometry = new THREE.CubeGeometry(10000, 10000, 10000);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff4500 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+    scene.add(playerSphere);
   };
 
   const addWorld = () => {
-    let sides = 100;
-    let tiers = 100;
-    let sphereGeometry = new THREE.SphereGeometry(worldRadius, sides, tiers);
-    let sphereMaterial = new THREE.MeshStandardMaterial({
-      color: 0x666666,
-      shading: THREE.FlatShading,
-    });
-
-    let vertexIndex;
-    let vertexVector = new THREE.Vector3();
-    let nextVertexVector = new THREE.Vector3();
-    let firstVertexVector = new THREE.Vector3();
-    let offset = new THREE.Vector3();
-    let currentTier = 1;
-    let lerpValue = 0.5;
-    let heightValue;
-    let maxHeight = 0.07;
-    for (let j = 1; j < tiers - 2; j++) {
-      currentTier = j;
-      for (let i = 0; i < sides; i++) {
-        vertexIndex = currentTier * sides + 1;
-        vertexVector = sphereGeometry.vertices[i + vertexIndex].clone();
-        if (j % 2 !== 0) {
-          if (i == 0) {
-            firstVertexVector = vertexVector.clone();
-          }
-          nextVertexVector = sphereGeometry.vertices[
-            i + vertexIndex + 1
-          ].clone();
-          if (i == sides - 1) {
-            nextVertexVector = firstVertexVector;
-          }
-          lerpValue = Math.random() * (0.75 - 0.25) + 0.25;
-          vertexVector.lerp(nextVertexVector, lerpValue);
-        }
-        heightValue = Math.random() * maxHeight - maxHeight / 2;
-        offset = vertexVector
-          .clone()
-          .normalize()
-          .multiplyScalar(heightValue);
-        sphereGeometry.vertices[i + vertexIndex] = vertexVector.add(offset);
-      }
-    }
+    let sphereGeometry = new THREE.SphereGeometry(worldRadius, 100, 100);
+    let sphereMaterial = new THREE.MeshPhongMaterial();
+    sphereMaterial.map = THREE.ImageUtils.loadTexture(earthImage);
+    sphereMaterial.bumpMap = THREE.ImageUtils.loadTexture(earthBumpImage);
+    sphereMaterial.bumpScale = 0.05;
+    sphereMaterial.specularMap = THREE.ImageUtils.loadTexture(earthSpecImage);
+    sphereMaterial.specular = new THREE.Color('grey');
     rollingGroundSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     rollingGroundSphere.receiveShadow = true;
     rollingGroundSphere.castShadow = false;
@@ -261,7 +221,6 @@ const Home = () => {
     scene.add(rollingGroundSphere);
     rollingGroundSphere.position.y = -24;
     rollingGroundSphere.position.z = 2;
-    addWorldTrees();
   };
 
   const addLight = () => {
@@ -271,82 +230,55 @@ const Home = () => {
     sun.position.set(12, 6, -7);
     sun.castShadow = true;
     scene.add(sun);
-    //Set up shadow properties for the sun light
     sun.shadow.mapSize.width = 256;
     sun.shadow.mapSize.height = 256;
     sun.shadow.camera.near = 0.5;
     sun.shadow.camera.far = 50;
   };
 
-  const addPathTree = () => {
+  const addRockObstacle = () => {
     let options = [0, 1, 2];
     let lane = Math.floor(Math.random() * 3);
-    addTree(true, lane);
+    addRock(true, lane);
     options.splice(lane, 1);
     if (Math.random() > 0.5) {
       lane = Math.floor(Math.random() * 2);
-      addTree(true, options[lane]);
+      addRock(true, options[lane]);
     }
   };
-  const addWorldTrees = () => {
-    let numTrees = 36;
-    let gap = 6.28 / 36;
-    for (let i = 0; i < numTrees; i++) {
-      addTree(false, i * gap, true);
-      addTree(false, i * gap, false);
-    }
-  };
-  const addTree = (inPath, row, isLeft) => {
-    let newTree;
-    if (inPath) {
-      if (treesPool.length == 0) return;
-      newTree = treesPool.pop();
-      newTree.visible = true;
-      treesInPath.push(newTree);
-      sphericalHelper.set(
-        worldRadius - 0.3,
-        pathAngleValues[row],
-        -rollingGroundSphere.rotation.x + 4,
-      );
-    } else {
-      newTree = createTree();
-      let forestAreaAngle = 0; //[1.52,1.57,1.62];
-      if (isLeft) {
-        forestAreaAngle = 1.68 + Math.random() * 0.1;
-      } else {
-        forestAreaAngle = 1.46 - Math.random() * 0.1;
-      }
-      sphericalHelper.set(worldRadius - 0.3, forestAreaAngle, row);
-    }
-    newTree.position.setFromSpherical(sphericalHelper);
-    let rollingGroundVector = rollingGroundSphere.position.clone().normalize();
-    let treeVector = newTree.position.clone().normalize();
-    newTree.quaternion.setFromUnitVectors(treeVector, rollingGroundVector);
-    newTree.rotation.x += Math.random() * ((2 * Math.PI) / 10) + -Math.PI / 10;
 
-    rollingGroundSphere.add(newTree);
+  const addRock = (inPath, row) => {
+    let newRock;
+    if (rocksPool.length == 0) return;
+    newRock = rocksPool.pop();
+    newRock.visible = true;
+    rocksInPath.push(newRock);
+    sphericalHelper.set(
+      worldRadius + 2.5,
+      pathAngleValuesRocks[row],
+      -rollingGroundSphere.rotation.x + 4,
+    );
+    newRock.position.setFromSpherical(sphericalHelper);
+    let rollingGroundVector = rollingGroundSphere.position.clone().normalize();
+    let rockVector = newRock.position.clone().normalize();
+    newRock.quaternion.setFromUnitVectors(rockVector, rollingGroundVector);
+    newRock.rotation.x += Math.random() * ((2 * Math.PI) / 10) + -Math.PI / 10;
+
+    rollingGroundSphere.add(newRock);
   };
-  const createTree = () => {
-    let treeGeometry = new THREE.CubeGeometry(2, 2, 2);
-    let treeMaterial = new THREE.MeshStandardMaterial({
-      color: 0xff4500,
-      shading: THREE.FlatShading,
+  const createRock = () => {
+    let rockGeometry = new THREE.SphereGeometry(0.2, 10, 15);
+    let rockMaterial = new THREE.MeshStandardMaterial({
+      color: 0x666666,
+      flatShading: THREE.FlatShading,
     });
-    let treeTop = new THREE.Mesh(treeGeometry, treeMaterial);
-    treeTop.receiveShadow = true;
-    treeTop.position.y = 3;
-    treeTop.rotation.y = Math.random() * Math.PI;
-    let treeTrunkGeometry = new THREE.CylinderGeometry(0.2, 0.2, 5);
-    let trunkMaterial = new THREE.MeshStandardMaterial({
-      color: 0x886633,
-      shading: THREE.FlatShading,
-    });
-    let treeTrunk = new THREE.Mesh(treeTrunkGeometry, trunkMaterial);
-    treeTrunk.position.y = 0;
-    let tree = new THREE.Object3D();
-    tree.add(treeTrunk);
-    tree.add(treeTop);
-    return tree;
+    let rockItem = new THREE.Mesh(rockGeometry, rockMaterial);
+    rockItem.receiveShadow = true;
+    rockItem.position.y = 0;
+    rockItem.rotation.y = Math.random() * Math.PI;
+    let rock = new THREE.Object3D();
+    rock.add(rockItem);
+    return rock;
   };
 
   const update = () => {
@@ -362,62 +294,40 @@ const Home = () => {
       2 * clock.getDelta(),
     ); //clock.getElapsedTime());
     if (!(isPausedNoState || isGameOverNoState)) {
-      if (clock.getElapsedTime() > treeReleaseInterval) {
+      if (clock.getElapsedTime() > rockReleaseInterval) {
         clock.start();
-        addPathTree();
-        switch (currentScore) {
-          case 20:
-            treeReleaseInterval *= 0.95;
-            break;
-          case 40:
-            treeReleaseInterval *= 0.9;
-            break;
-          case 60:
-            treeReleaseInterval *= 0.85;
-            break;
-          default:
-            break;
-        }
+        addRockObstacle();
       }
     }
-    doTreeLogic();
+    doRockLogic();
     render();
     if (!isGameOverNoState) requestAnimationFrame(update); //request next update
   };
 
-  const doTreeLogic = () => {
-    let oneTree;
-    let treePos = new THREE.Vector3();
-    let treesToRemove = [];
-    treesInPath.forEach((element, index) => {
-      oneTree = treesInPath[index];
-      treePos.setFromMatrixPosition(oneTree.matrixWorld);
-      if (treePos.z > 6 && oneTree.visible) {
+  const doRockLogic = () => {
+    let oneRock;
+    let rockPos = new THREE.Vector3();
+    let rocksToRemove = [];
+    rocksInPath.forEach((element, index) => {
+      oneRock = rocksInPath[index];
+      rockPos.setFromMatrixPosition(oneRock.matrixWorld);
+      if (rockPos.z > 6 && oneRock.visible) {
         //gone out of our view zone
-        treesToRemove.push(oneTree);
+        rocksToRemove.push(oneRock);
       } else {
         //check collision
-        if (treePos.distanceTo(playerSphere.position) <= 0.6) {
+        if (rockPos.distanceTo(playerSphere.position) <= 0.38) {
           gameOver();
         }
       }
     });
     let fromWhere;
-    treesToRemove.forEach((element, index) => {
-      oneTree = treesToRemove[index];
-      fromWhere = treesInPath.indexOf(oneTree);
-      treesInPath.splice(fromWhere, 1);
-      treesPool.push(oneTree);
-      oneTree.visible = false;
-      if (currentScore === 20) {
-        rollingSpeed *= 10;
-      }
-      if (currentScore === 40) {
-        rollingSpeed *= 1.3;
-      }
-      if (currentScore === 60) {
-        rollingSpeed *= 1.3;
-      }
+    rocksToRemove.forEach((element, index) => {
+      oneRock = rocksToRemove[index];
+      fromWhere = rocksInPath.indexOf(oneRock);
+      rocksInPath.splice(fromWhere, 1);
+      rocksPool.push(oneRock);
+      oneRock.visible = false;
       setCurrentScore(prevCurrentScore => (prevCurrentScore += 1));
     });
   };
@@ -464,13 +374,13 @@ const Home = () => {
           <ButtonContainer>
             <Button
               className={`${focusedButton === 1 ? `focused` : ``} menu`}
-              to="/menu"
+              to="/exw/game/menu"
             >
               Menu
             </Button>
             <Button
               className={`${focusedButton === 2 ? `focused` : ``} highscores`}
-              to="/highscores"
+              to="/exw/game/highscores"
             >
               Highscores
             </Button>
@@ -493,7 +403,7 @@ const Home = () => {
           <ButtonContainer>
             <Button
               className={`${focusedButton === 1 ? `focused` : ``} resume`}
-              to="/menu"
+              to="/exw/game/menu"
               onClick={e => {
                 e.preventDefault();
               }}
@@ -502,7 +412,7 @@ const Home = () => {
             </Button>
             <Button
               className={`${focusedButton === 2 ? `focused` : ``} menu`}
-              to="/menu"
+              to="/exw/game/menu"
             >
               Menu
             </Button>

@@ -54,12 +54,12 @@ const Home = ({ history }) => {
       tempdata.push(' ');
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'X') {
-      history.push('/menu');
+      history.push('/exw/game/menu');
     }
 
     if (buttonMapping[gamepadEvent.keyCode] === 'O') {
       setUsernameStore(oldUsername);
-      history.push('/menu');
+      history.push('/exw/game/menu');
     }
 
     if (buttonMapping[gamepadEvent.keyCode] === 'RIGHT') {

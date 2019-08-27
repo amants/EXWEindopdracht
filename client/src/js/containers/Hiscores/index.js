@@ -19,7 +19,7 @@ const Home = ({ history }) => {
   let rowId = 1;
   const { isFocused, ref } = useFocus(gamepadEvent => {
     if (buttonMapping[gamepadEvent.keyCode] === 'O') {
-      history.push('/menu');
+      history.push('/exw/game/menu');
     }
   });
   return (
