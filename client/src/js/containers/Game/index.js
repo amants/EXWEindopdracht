@@ -193,7 +193,7 @@ const Home = () => {
   const addPlayer = () => {
     let sphereGeometry = new THREE.SphereGeometry(playerRadius, 32, 32);
     let sphereMaterial = new THREE.MeshPhongMaterial({
-      color: 0xffa500,
+      color: 0xcdcdcd,
       flatShading: THREE.FlatShading,
     });
     playerSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
