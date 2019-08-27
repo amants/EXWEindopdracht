@@ -26,6 +26,7 @@ const Root = () => (
       <PrivateRoute path="/game" component={Game} exact />
       <PrivateRoute path="/namechange" component={NameChange} exact />
       <PrivateRoute path="/highscores" component={Hiscores} exact />
+      <Route component={() => <h1>Something went wrong</h1>} />
     </Switch>
   </Router>
 );
@@ -44,17 +45,17 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     );
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    return (
-      <Route
-        {...rest}
-        render={props => {
-          window.onbeforeunload = null;
-          return <Component {...props} />;
-        }}
-      />
-    );
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   return (
+  //     <Route
+  //       {...rest}
+  //       render={props => {
+  //         window.onbeforeunload = null;
+  //         return <Component {...props} />;
+  //       }}
+  //     />
+  //   );
+  // }
 
   return <Route render={() => <Redirect to={`/`} />} />;
 };
