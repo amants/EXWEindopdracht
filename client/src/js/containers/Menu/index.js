@@ -28,7 +28,7 @@ const Menu = ({ history }) => {
       buttonss[tempFieldFocus - 1].click();
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'O') {
-      history.push('/');
+      history.push('/exw/game/');
     }
     if (buttonMapping[gamepadEvent.keyCode] === 'DOWN') {
       buttonss.map((key, i) => {
@@ -73,25 +73,25 @@ const Menu = ({ history }) => {
       <ButtonContainer ref={ref}>
         <Button
           className={`${focusedButton === 1 ? `focused` : ``} start_game`}
-          to="/game"
+          to="/exw/game/game"
         >
           Start game
         </Button>
         <Button
           className={`${focusedButton === 2 ? `focused` : ``} highscores`}
-          to="/highscores"
+          to="/exw/game/highscores"
         >
           highscores
         </Button>
         <Button
           className={`${focusedButton === 3 ? `focused` : ``} namechange`}
-          to="/namechange"
+          to="/exw/game/namechange"
         >
           Change name
         </Button>
         <Button
           className={`${focusedButton === 4 ? `focused` : ``} quitbutton`}
-          to="/"
+          to="/exw/game/"
         >
           Quit
         </Button>

@@ -374,13 +374,13 @@ const Home = () => {
           <ButtonContainer>
             <Button
               className={`${focusedButton === 1 ? `focused` : ``} menu`}
-              to="/menu"
+              to="/exw/game/menu"
             >
               Menu
             </Button>
             <Button
               className={`${focusedButton === 2 ? `focused` : ``} highscores`}
-              to="/highscores"
+              to="/exw/game/highscores"
             >
               Highscores
             </Button>
@@ -403,7 +403,7 @@ const Home = () => {
           <ButtonContainer>
             <Button
               className={`${focusedButton === 1 ? `focused` : ``} resume`}
-              to="/menu"
+              to="/exw/game/menu"
               onClick={e => {
                 e.preventDefault();
               }}
@@ -412,7 +412,7 @@ const Home = () => {
             </Button>
             <Button
               className={`${focusedButton === 2 ? `focused` : ``} menu`}
-              to="/menu"
+              to="/exw/game/menu"
             >
               Menu
             </Button>

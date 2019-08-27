@@ -41,7 +41,7 @@ const Home = ({ history }) => {
     const tempdata = [...usernameNoState];
     const tempFieldFocus = focusedFieldNoState;
     if (buttonMapping[gamepadEvent.keyCode] === 'X') {
-      history.push('/menu');
+      history.push('/exw/game/menu');
     }
 
     if (buttonMapping[gamepadEvent.keyCode] === 'RIGHT') {
