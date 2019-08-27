@@ -25,31 +25,33 @@ const Home = () => {
   const [isPaused, setPaused] = useState(false);
   const [focusedButton, setFocusedButton] = useState(1);
   const [lastHighScore, setLastHighScore] = useState(getLastHighScore());
-  let renderer, sun, scene;
-  let sceneWidth;
-  let sceneHeight;
-  let isGameOverNoState;
-  let isPausedNoState;
-  let camera;
-  let dom;
-  let rollingGroundSphere;
-  let playerSphere;
-  let rollingSpeed = 0.008;
-  let playerRollingSpeed;
-  let worldRadius = 26;
-  let playerRadius = 0.2;
-  let sphericalHelper;
-  let pathAngleValuesRocks;
-  let playerY = 4.35;
-  let leftLane = -1.6;
-  let rightLane = 1.6;
-  let middleLane = 0;
-  let currentLane;
-  let clock;
-  let rockReleaseInterval = 0.5;
-  let rocksInPath;
-  let rocksPool;
-  let focusedFieldNoState = focusedButton;
+  let renderer,
+    sun,
+    scene,
+    sceneWidth,
+    sceneHeight,
+    isGameOverNoState,
+    isPausedNoState,
+    camera,
+    dom,
+    rollingGroundSphere,
+    playerSphere,
+    playerRollingSpeed,
+    sphericalHelper,
+    pathAngleValuesRocks,
+    currentLane,
+    clock,
+    rocksInPath,
+    rocksPool,
+    rollingSpeed = 0.008,
+    worldRadius = 26,
+    playerRadius = 0.2,
+    playerY = 4.35,
+    leftLane = -1.6,
+    rightLane = 1.6,
+    middleLane = 0,
+    rockReleaseInterval = 0.5,
+    focusedFieldNoState = focusedButton;
 
   const { isFocused, ref } = useFocus(gamepadEvent => {
     const buttonss = isGameOverNoState
@@ -137,7 +139,6 @@ const Home = () => {
     sceneWidth = window.innerWidth;
     sceneHeight = window.innerHeight;
     scene = new THREE.Scene(); //the 3d scene
-    scene.fog = new THREE.FogExp2(0x151515, 0.01);
     camera = new THREE.PerspectiveCamera(
       60,
       sceneWidth / sceneHeight,
@@ -154,7 +155,6 @@ const Home = () => {
     //stats = new Stats();
     //dom.appendChild(stats.dom);
     createrocksPool();
-    addSkyBox();
     addWorld();
     addPlayer();
     addLight();
@@ -204,13 +204,6 @@ const Home = () => {
     currentLane = middleLane;
     playerSphere.position.x = currentLane;
     scene.add(playerSphere);
-  };
-
-  const addSkyBox = () => {
-    const geometry = new THREE.CubeGeometry(10000, 10000, 10000);
-    const material = new THREE.MeshBasicMaterial({ color: 0xff4500 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
   };
 
   const addWorld = () => {
