@@ -146,7 +146,7 @@ const Home = () => {
       1000,
     ); //perspective camera
     renderer = new THREE.WebGLRenderer({ alpha: true }); //renderer with transparent backdrop
-    renderer.setClearColor(0xfffafa, 1);
+    renderer.setClearColor(0x151515, 1);
     renderer.shadowMap.enabled = true; //enable shadow
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setSize(sceneWidth, sceneHeight);
@@ -269,7 +269,7 @@ const Home = () => {
   const createRock = () => {
     let rockGeometry = new THREE.SphereGeometry(0.2, 10, 15);
     let rockMaterial = new THREE.MeshStandardMaterial({
-      color: 0x151515,
+      color: 0x666666,
       flatShading: THREE.FlatShading,
     });
     let rockItem = new THREE.Mesh(rockGeometry, rockMaterial);
