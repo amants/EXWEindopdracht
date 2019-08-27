@@ -26,7 +26,7 @@ const Root = () => (
       <PrivateRoute path="/exw/game/game" component={Game} exact />
       <PrivateRoute path="/exw/game/namechange" component={NameChange} exact />
       <PrivateRoute path="/exw/game/highscores" component={Hiscores} exact />
-      <Route component={() => <h1>Something went wrong</h1>} />
+      <Route component={() => <h1>404: Page not found</h1>} />
     </Switch>
   </Router>
 );
@@ -57,7 +57,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
   //   );
   // }
 
-  return <Route render={() => <Redirect to={`/`} />} />;
+  return <Route render={() => <Redirect to={`/exw/game/`} />} />;
 };
 
 PrivateRoute.propTypes = {
